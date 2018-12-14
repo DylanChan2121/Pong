@@ -29,39 +29,10 @@ class Menu extends Phaser.Scene{
     
 }
 
-class Over extends Phaser.Scene{
-    
-    constructor ()
-    {
-        super('Over');
 
-        this.active;
-        this.currentScene;
-        
-        this.menu;
-    }
-    
-    preload() {
-        this.load.image('menu', 'assets/menu.png');
-        this.load.image('restart', 'assets/restart.png');         
-    }
-    
-    create(){
-        
-        let menu = this.add.sprite(0, 0, 'menu');
-        let button = this.add.sprite(0, 0, 'restart');
-
-        menu.setOrigin(0, 0);
-        button.setOrigin(0, 0);
-        
-        button.setInteractive();
-        button.on('pointerdown', () => this.scene.start('Game'));
-    }
-    
-}
 
 let gameScene = new Phaser.Scene('Game');
-
+let Over = new Phaser.Scene('Over');
 var config = {
     type: Phaser.AUTO,
     width: 640,
@@ -93,7 +64,7 @@ gameScene.preload = function() {
     var loadingText = this.make.text({
         x: width / 2,
         y: height / 2 - 50,
-        text: 'Loading CA1, click mouse button to play',
+        text: 'Loading CA1, touch the scene to move paddles',
         style: {
             font: '20px monospace',
             fill: '#00FF00'
@@ -155,11 +126,14 @@ gameScene.preload = function() {
         this.load.image('logo' + i, 'load.png');
      /* controls the loading speed of the progrees bar that closer to 0 the faster the more further from 0 the slower*/
     }
+    this.load.image('restartnew','assets/restartnew.png');
+    this.load.image('GameOver','assets/GameOver.png');
     this.load.image('menu','assets/menu.png');
     this.load.image('field', 'assets/backgroundtest2.png');
     this.load.image('player1', 'assets/player1.png');
     this.load.image('ball', 'assets/ball.png');
     this.load.image('player2', 'assets/enemy.png');
+    this.load.image('restart','assets/restart.png');
     this.load.audio("music","assets/music.mp3")
     console.log("end preload");
 } //ending of preloadGame
@@ -239,12 +213,15 @@ gameScene.update = function() {
     // console.log(cursors.up.isDown);
         if(this.ball.x < 30)
             {
-                resetBall(this.ball);
+                console.log("Over scene called");
+                 this.scene.start(Over);
+                
             }
         
           if(this.ball.x > 610)
             {
-                resetBall(this.ball);
+                console.log("Over scene called");
+                 this.scene.start(Over);
             }
     //ball reset
     if(this.input.activePointer.isDown){
@@ -260,26 +237,29 @@ gameScene.update = function() {
     console.log(score);
 }//ending of update game
 
+Over.create = function(){
+    
+        console.log("Over scene create");
+    
+            let menu = this.add.sprite(0, 0, 'GameOver');
+        let button = this.add.sprite(0, 0, 'restartnew');
+    
+        this.scoreText = this.add.text(225,130,'Your Score:0',{
+            fontSize: '25px',
+            fill: '#ffffff'
+        });
+        this.scoreText.setText("Your Score:" + score);
+        soundName.destroy();
+    
+    
 
-/*
-gameScene.gameOver = function() {
+        menu.setOrigin(0, 0);
+        button.setOrigin(0, 0);
+        
+        button.setInteractive();
+        button.on('pointerdown', () => this.scene.start('Game'));
+    //loads into a new scene GameOver and destroys the music
+}//end of over
 
-    // 08 -> ship alive flag set to  dead
-    this.isShipAlive = false;
-    soundName.destroy();
 
-    //07: replace this.scene.restart with a camera Shake effect
-    this.cameras.main.shake(500);
-
-   //fading out
-
-this.time.delayedCall(250, function() {
- this.cameras.main.fade(250);
-}, [], this);
-
-    // restart game
-    this.time.delayedCall(500, function() {
-        this.scene.start('Over');
-    }, [], this);
-*/
 
